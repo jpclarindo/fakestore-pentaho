@@ -1,19 +1,37 @@
-CREATE VIEW IF NOT EXISTS user_analytics AS
+-- Made by Joao Paulo Clarindo - 09/12/2025
+
+-- Drop TABLE
+DROP TABLE IF EXISTS user_analytics;
+
+
+-- Create a new table for analytics
+CREATE TABLE IF NOT EXISTS user_analytics (
+	user_id INTEGER PRIMARY KEY,
+	total_carts INTEGER,
+	total_products INTEGER,
+	avg_products_per_cart REAL,
+	distinct_categories INTEGER,
+	most_expensive_product REAL,
+	total_value REAL
+);
+
+
+INSERT INTO user_analytics (user_id, total_carts, total_products, avg_products_per_cart, distinct_categories, most_expensive_product, total_value)
 SELECT 
     u.user_id,    
-    -- Número de carrinhos do usuário
+    -- Number of user shopping carts
     COUNT(DISTINCT c.cart_id) AS total_carts,    
-    -- Número de produtos distintos em todos os carrinhos (por usuário)
+    -- Number of distinct products in all shopping carts (per user)
     COUNT(DISTINCT ci.product_id) AS total_products,    
-    --  Média de produtos por carrinho, arredondado
+    -- Average number of products per cart, rounded.
     ROUND(
         CAST(COUNT(ci.product_id) AS REAL) / NULLIF(COUNT(DISTINCT c.cart_id), 0), 2
     ) AS avg_products_per_cart,    
-    -- Número de categorias diferentes de produtos comprados
+    -- Number of different categories of products purchased
     COUNT(DISTINCT p.category) AS distinct_categories,    
-    -- Preço do produto mais caro do usuário (retorna 0 se não houver compras)
+    -- Price of the user's most expensive product (returns 0 if there are no purchases)
     COALESCE(MAX(p.price), 0) AS most_expensive_product,    
-    -- Soma dos preços dos produtos (assumindo uma unidade por produto)
+    -- Sum of the prices of the products (assuming one unit per product)
     COALESCE(SUM(p.price), 0) AS total_value
 FROM
     users u

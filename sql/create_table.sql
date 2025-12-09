@@ -1,3 +1,6 @@
+-- Made by Joao Paulo Clarindo - 09/12/2025
+
+
 -- Creating dimension tables
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY UNIQUE,
