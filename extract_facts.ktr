@@ -2213,6 +2213,10 @@
         <column_name>price</column_name>
         <stream_name>price</stream_name>
       </field>
+      <field>
+        <column_name>category</column_name>
+        <stream_name>category</stream_name>
+      </field>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -2301,6 +2305,19 @@
       <field>
         <name>price</name>
         <path>$.price</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>category</name>
+        <path>$.category</path>
         <type>String</type>
         <format/>
         <currency/>
