@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>extract_facts</name>
+    <name>extract_dimensions</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -427,9 +427,9 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2025/12/09 12:42:18.843</created_date>
+    <created_date>2025/12/09 21:08:45.906</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2025/12/09 12:42:18.843</modified_date>
+    <modified_date>2025/12/09 21:08:45.906</modified_date>
     <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
@@ -484,63 +484,58 @@
   </connection>
   <order>
     <hop>
-      <from>Create Carts URL</from>
-      <to>REST client (carts)</to>
+      <from>Parsing Result JSON (users)</from>
+      <to>Select values (users)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Parsing API JSON (carts)</from>
-      <to>Parsing Result JSON (carts)</to>
+      <from>Parsing Result JSON (products)</from>
+      <to>Select values (products)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Parsing Products JSON</from>
-      <to>Parsing Products Result JSON</to>
+      <from>Create Users URL</from>
+      <to>HTTP client</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Parsing Products Result JSON</from>
-      <to>Select values (cart_items)</to>
+      <from>Create Products URL</from>
+      <to>HTTP client 2</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Parsing Result JSON (carts)</from>
-      <to>Select values (carts)</to>
+      <from>HTTP client</from>
+      <to>Parsing API JSON (users)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>REST client (carts)</from>
-      <to>Parsing API JSON (carts)</to>
+      <from>Parsing API JSON (users)</from>
+      <to>Parsing Result JSON (users)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values (carts)</from>
-      <to>Select values (remove products)</to>
+      <from>HTTP client 2</from>
+      <to>Parsing API JSON (products)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values (carts)</from>
-      <to>Wait Insert into carts</to>
+      <from>Parsing API JSON (products)</from>
+      <to>Parsing Result JSON (products)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Wait Insert into carts</from>
-      <to>Parsing Products JSON</to>
+      <from>Select values (users)</from>
+      <to>Insert / update (users)</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values (remove products)</from>
-      <to>Execute SQL script</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Select values (cart_items)</from>
-      <to>Insert / update (cart_items)</to>
+      <from>Select values (products)</from>
+      <to>Insert / update (products)</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Create Carts URL</name>
+    <name>Create Products URL</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -558,19 +553,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>https://fakestoreapi.com/carts</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
-      </field>
-      <field>
-        <name>Content-type</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>application/json</nullif>
+        <nullif>https://fakestoreapi.com/products</nullif>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -590,14 +573,14 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>64</xloc>
-      <yloc>48</yloc>
+      <xloc>96</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Execute SQL script</name>
-    <type>ExecSQL</type>
+    <name>Create Users URL</name>
+    <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -606,26 +589,25 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>fakestore</connection>
-    <execute_each_row>Y</execute_each_row>
-    <single_statement>N</single_statement>
-    <replace_variables>N</replace_variables>
-    <quoteString>N</quoteString>
-    <sql>INSERT OR IGNORE INTO carts(cart_id, user_id)
-VALUES (?, ?)</sql>
-    <set_params>Y</set_params>
-    <insert_field/>
-    <update_field/>
-    <delete_field/>
-    <read_field/>
-    <arguments>
-      <argument>
-        <name>cart_id</name>
-      </argument>
-      <argument>
-        <name>user_id</name>
-      </argument>
-    </arguments>
+    <fields>
+      <field>
+        <name>url</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>https://fakestoreapi.com/users</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+    </fields>
+    <limit>1</limit>
+    <never_ending>N</never_ending>
+    <interval_in_ms>5000</interval_in_ms>
+    <row_time_field>now</row_time_field>
+    <last_time_field>FiveSecondsAgo</last_time_field>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -635,13 +617,101 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>688</xloc>
-      <yloc>48</yloc>
+      <xloc>96</xloc>
+      <yloc>112</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Insert / update (cart_items)</name>
+    <name>HTTP client</name>
+    <type>HTTP</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <url/>
+    <urlInField>Y</urlInField>
+    <urlField>url</urlField>
+    <encoding>UTF-8</encoding>
+    <httpLogin/>
+    <httpPassword>Encrypted </httpPassword>
+    <proxyHost/>
+    <proxyPort/>
+    <socketTimeout>10000</socketTimeout>
+    <connectionTimeout>10000</connectionTimeout>
+    <closeIdleConnectionsTime>-1</closeIdleConnectionsTime>
+    <lookup>
+    </lookup>
+    <result>
+      <name>result</name>
+      <code/>
+      <response_time/>
+      <response_header/>
+    </result>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>112</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>HTTP client 2</name>
+    <type>HTTP</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <url/>
+    <urlInField>Y</urlInField>
+    <urlField>url</urlField>
+    <encoding>UTF-8</encoding>
+    <httpLogin/>
+    <httpPassword>Encrypted </httpPassword>
+    <proxyHost/>
+    <proxyPort/>
+    <socketTimeout>10000</socketTimeout>
+    <connectionTimeout>10000</connectionTimeout>
+    <closeIdleConnectionsTime>-1</closeIdleConnectionsTime>
+    <lookup>
+    </lookup>
+    <result>
+      <name>result</name>
+      <code/>
+      <response_time/>
+      <response_header/>
+    </result>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>224</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Insert / update (products)</name>
     <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
@@ -656,13 +726,7 @@ VALUES (?, ?)</sql>
     <update_bypassed>Y</update_bypassed>
     <lookup>
       <schema/>
-      <table>cart_items</table>
-      <key>
-        <name>cart_id</name>
-        <field>cart_id</field>
-        <condition>=</condition>
-        <name2/>
-      </key>
+      <table>products</table>
       <key>
         <name>product_id</name>
         <field>product_id</field>
@@ -670,24 +734,52 @@ VALUES (?, ?)</sql>
         <name2/>
       </key>
       <key>
-        <name>quantity</name>
-        <field>quantity</field>
+        <name>title</name>
+        <field>title</field>
         <condition>=</condition>
         <name2/>
       </key>
-      <value>
-        <name>cart_id</name>
-        <rename>cart_id</rename>
-        <update>Y</update>
-      </value>
+      <key>
+        <name>description</name>
+        <field>description</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>price</name>
+        <field>price</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>category</name>
+        <field>category</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
       <value>
         <name>product_id</name>
         <rename>product_id</rename>
         <update>Y</update>
       </value>
       <value>
-        <name>quantity</name>
-        <rename>quantity</rename>
+        <name>title</name>
+        <rename>title</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>description</name>
+        <rename>description</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>price</name>
+        <rename>price</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>category</name>
+        <rename>category</rename>
         <update>Y</update>
       </value>
     </lookup>
@@ -700,13 +792,155 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>48</yloc>
+      <xloc>896</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Parsing API JSON (carts)</name>
+    <name>Insert / update (users)</name>
+    <type>InsertUpdate</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>fakestore</connection>
+    <commit>1000</commit>
+    <update_bypassed>Y</update_bypassed>
+    <lookup>
+      <schema/>
+      <table>users</table>
+      <key>
+        <name>user_id</name>
+        <field>user_id</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>first_name</name>
+        <field>first_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>last_name</name>
+        <field>last_name</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>email</name>
+        <field>email</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>username</name>
+        <field>username</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>city</name>
+        <field>city</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>street</name>
+        <field>street</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>zipcode</name>
+        <field>zipcode</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>lat</name>
+        <field>lat</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <key>
+        <name>long</name>
+        <field>long</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>user_id</name>
+        <rename>user_id</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>first_name</name>
+        <rename>first_name</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>last_name</name>
+        <rename>last_name</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>email</name>
+        <rename>email</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>username</name>
+        <rename>username</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>city</name>
+        <rename>city</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>street</name>
+        <rename>street</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>zipcode</name>
+        <rename>zipcode</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>lat</name>
+        <rename>lat</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>long</name>
+        <rename>long</rename>
+        <update>Y</update>
+      </value>
+    </lookup>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>896</xloc>
+      <yloc>112</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Parsing API JSON (products)</name>
     <type>JsonInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -771,13 +1005,13 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>208</xloc>
-      <yloc>144</yloc>
+      <xloc>368</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Parsing Products JSON</name>
+    <name>Parsing API JSON (users)</name>
     <type>JsonInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -808,93 +1042,9 @@ VALUES (?, ?)</sql>
     </file>
     <fields>
       <field>
-        <name>result</name>
+        <name>docs</name>
         <path>$.[*]</path>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-    </fields>
-    <limit>0</limit>
-    <IsInFields>Y</IsInFields>
-    <IsAFile>N</IsAFile>
-    <valueField>products</valueField>
-    <shortFileFieldName/>
-    <pathFieldName/>
-    <hiddenFieldName/>
-    <lastModificationTimeFieldName/>
-    <uriNameFieldName/>
-    <rootUriNameFieldName/>
-    <extensionFieldName/>
-    <sizeFieldName/>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>528</xloc>
-      <yloc>144</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Parsing Products Result JSON</name>
-    <type>JsonInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <include>N</include>
-    <include_field/>
-    <rownum>N</rownum>
-    <addresultfile>N</addresultfile>
-    <readurl>N</readurl>
-    <removeSourceField>Y</removeSourceField>
-    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
-    <doNotFailIfNoFile>Y</doNotFailIfNoFile>
-    <ignoreMissingPath>Y</ignoreMissingPath>
-    <defaultPathLeafToNull>Y</defaultPathLeafToNull>
-    <includeNulls>N</includeNulls>
-    <rownum_field/>
-    <file>
-      <name/>
-      <filemask/>
-      <exclude_filemask/>
-      <file_required>N</file_required>
-      <include_subfolders>N</include_subfolders>
-    </file>
-    <fields>
-      <field>
-        <name>product_id</name>
-        <path>$.productId</path>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>quantity</name>
-        <path>$.quantity</path>
-        <type>Integer</type>
         <format/>
         <currency/>
         <decimal/>
@@ -926,13 +1076,13 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>688</xloc>
-      <yloc>144</yloc>
+      <xloc>368</xloc>
+      <yloc>112</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Parsing Result JSON (carts)</name>
+    <name>Parsing Result JSON (products)</name>
     <type>JsonInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -963,7 +1113,7 @@ VALUES (?, ?)</sql>
     </file>
     <fields>
       <field>
-        <name>cart_id</name>
+        <name>product_id</name>
         <path>$.id</path>
         <type>Integer</type>
         <format/>
@@ -976,8 +1126,8 @@ VALUES (?, ?)</sql>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>user_id</name>
-        <path>$.userId</path>
+        <name>title</name>
+        <path>$.title</path>
         <type>String</type>
         <format/>
         <currency/>
@@ -989,8 +1139,34 @@ VALUES (?, ?)</sql>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>products</name>
-        <path>$.products</path>
+        <name>description</name>
+        <path>$.description</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>price</name>
+        <path>$.price</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>category</name>
+        <path>$.category</path>
         <type>String</type>
         <format/>
         <currency/>
@@ -1023,14 +1199,14 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>208</xloc>
-      <yloc>48</yloc>
+      <xloc>544</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>REST client (carts)</name>
-    <type>Rest</type>
+    <name>Parsing Result JSON (users)</name>
+    <type>JsonInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -1039,68 +1215,169 @@ VALUES (?, ?)</sql>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <applicationType>TEXT PLAIN</applicationType>
-    <method>GET</method>
-    <url>http://fakestoreapi.com/users</url>
-    <urlInField>Y</urlInField>
-    <dynamicMethod>N</dynamicMethod>
-    <methodFieldName/>
-    <urlField>url</urlField>
-    <bodyField/>
-    <httpLogin/>
-    <httpPassword>Encrypted </httpPassword>
-    <proxyHost/>
-    <proxyPort/>
-    <preemptive>N</preemptive>
-    <trustStoreFile/>
-    <trustStorePassword>Encrypted </trustStorePassword>
-    <headers>
-      <header>
-        <field>Content-type</field>
-        <name>Content-type</name>
-      </header>
-    </headers>
-    <parameters>
-      </parameters>
-    <matrixParameters>
-      </matrixParameters>
-    <result>
-      <name>result</name>
-      <code/>
-      <response_time/>
-      <response_header/>
-    </result>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>64</xloc>
-      <yloc>144</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Select values (cart_items)</name>
-    <type>SelectValues</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <readurl>N</readurl>
+    <removeSourceField>Y</removeSourceField>
+    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
+    <doNotFailIfNoFile>Y</doNotFailIfNoFile>
+    <ignoreMissingPath>N</ignoreMissingPath>
+    <defaultPathLeafToNull>Y</defaultPathLeafToNull>
+    <includeNulls>N</includeNulls>
+    <rownum_field/>
+    <file>
+      <name/>
+      <filemask/>
+      <exclude_filemask/>
+      <file_required>N</file_required>
+      <include_subfolders>N</include_subfolders>
+    </file>
     <fields>
-      <select_unspecified>N</select_unspecified>
-      <remove>
+      <field>
         <name>user_id</name>
-      </remove>
+        <path>$.id</path>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>first_name</name>
+        <path>$.name.firstname</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>last_name</name>
+        <path>$.name.lastname</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>email</name>
+        <path>$.email</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>username</name>
+        <path>$.username</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>city</name>
+        <path>$.address.city</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>street</name>
+        <path>$.address.street</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>zipcode</name>
+        <path>$.address.zipcode</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>lat</name>
+        <path>$.address.geolocation.lat</path>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>long</name>
+        <path>$.address.geolocation.long</path>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
     </fields>
+    <limit>0</limit>
+    <IsInFields>Y</IsInFields>
+    <IsAFile>N</IsAFile>
+    <valueField>docs</valueField>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -1110,16 +1387,16 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>848</xloc>
-      <yloc>144</yloc>
+      <xloc>544</xloc>
+      <yloc>112</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Select values (carts)</name>
+    <name>Select values (products)</name>
     <type>SelectValues</type>
     <description/>
-    <distribute>N</distribute>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -1131,9 +1408,6 @@ VALUES (?, ?)</sql>
       <remove>
         <name>url</name>
       </remove>
-      <remove>
-        <name>Content-type</name>
-      </remove>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -1144,16 +1418,16 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>368</xloc>
-      <yloc>48</yloc>
+      <xloc>720</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Select values (remove products)</name>
+    <name>Select values (users)</name>
     <type>SelectValues</type>
     <description/>
-    <distribute>N</distribute>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -1163,7 +1437,7 @@ VALUES (?, ?)</sql>
     <fields>
       <select_unspecified>N</select_unspecified>
       <remove>
-        <name>products</name>
+        <name>url</name>
       </remove>
     </fields>
     <attributes/>
@@ -1175,39 +1449,8 @@ VALUES (?, ?)</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>48</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Wait Insert into carts</name>
-    <type>BlockUntilStepsFinish</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <steps>
-      <step>
-        <name>Execute SQL script</name>
-        <CopyNr>0</CopyNr>
-      </step>
-    </steps>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>368</xloc>
-      <yloc>144</yloc>
+      <xloc>720</xloc>
+      <yloc>112</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
