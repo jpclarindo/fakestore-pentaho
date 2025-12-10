@@ -24,9 +24,9 @@ SELECT
     -- Number of distinct products in all shopping carts (per user)
     COUNT(DISTINCT ci.product_id) AS total_products,    
     -- Average number of products per cart, rounded.
-    ROUND(
+    COALESCE(ROUND(
         CAST(COUNT(ci.product_id) AS REAL) / NULLIF(COUNT(DISTINCT c.cart_id), 0), 2
-    ) AS avg_products_per_cart,    
+    ), 0) AS avg_products_per_cart,    
     -- Number of different categories of products purchased
     COUNT(DISTINCT p.category) AS distinct_categories,    
     -- Price of the user's most expensive product (returns 0 if there are no purchases)
