@@ -6,6 +6,10 @@ This project implements a complete ETL (Extract, Transform, Load) pipeline using
 
 The orchestration is managed by the main job **`fakestore_job.kjb`**, which executes the following steps sequentially:
 
+<p align="center">
+  <img src="img/job.png" alt="Star Schema">
+</p>
+
 1.  **Environment Setup:** Creates a clean `fakestore.db` file by copying a template (`empty.db`) to the target directory.
 2.  **Schema Initialization:** Executes the `create_table.sql` script to build the database structure.
 3.  **ETL Execution:** Triggers the **`extract_facts.ktr`** transformation to ingest and process data.
